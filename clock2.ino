@@ -72,7 +72,7 @@ void loop()
     struct tm* p_tm = localtime(&now);
     Serial.print("-------------------------------------------------\n");
     Serial.print("Date & Time : ");
-    Serial.print(p_tm->tm_mday);
+    Serial.print(p_tm->tm_wday); //was tm_mday but believe this was a typo by original author
     Serial.print("/");
     Serial.print(p_tm->tm_mon + 1);
     Serial.print("/");
