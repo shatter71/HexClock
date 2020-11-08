@@ -18,3 +18,5 @@ Settings to configure:
 
 
 Updated code to show minutes 1 through 9 as two-digits instead of one digit (e.g., 2 is shown as 02)
+
+Updated code to automatically adjust for daylight savings time.
