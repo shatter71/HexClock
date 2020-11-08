@@ -31,8 +31,8 @@ const char* ssid    = "SSID";
 const char* password = "PASSWORD";
 
 //Your time zone
-int timezone = 7 * 3600; //UTC offset * 3600
-int dst = 0;
+int timezone = 8 * 3600; //UTC offset * 3600
+int dst = 1;  //Default to DST is in effect
    
 WiFiClient wifiClient;
 
@@ -58,13 +58,16 @@ void setup() {
   connectWifi();
   Serial.println();
   Serial.println("\n\nNext Loop-Step: " + String(millis()) + ":");
-  configTime(timezone, dst, "pool.ntp.org","time.nist.gov");
+  configTime(timezone, dst*(-3600), "pool.ntp.org","time.nist.gov");
   FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS)
     .setCorrection(TypicalLEDStrip)
     .setDither(BRIGHTNESS < 255);
   FastLED.setBrightness(BRIGHTNESS);
 }
 
+void timeupdate(int timezone, int dst) {
+  configTime(timezone, dst*(-3600), "pool.ntp.org","time.nist.gov");
+}
 
 void loop()
 {
@@ -72,15 +75,25 @@ void loop()
     struct tm* p_tm = localtime(&now);
     Serial.print("-------------------------------------------------\n");
     Serial.print("Date & Time : ");
-    Serial.print(p_tm->tm_wday); //was tm_mday but believe this was a typo by original author
+    Serial.print(p_tm->tm_mday);
     Serial.print("/");
     Serial.print(p_tm->tm_mon + 1);
     Serial.print("/");
     Serial.print(p_tm->tm_year + 1900);
+    Serial.print(" DST ");
+    Serial.print(dst);
+    Serial.print(" ");
+    Serial.print(p_tm->tm_isdst);
     Serial.print(" ");
     int hour=p_tm->tm_hour;
     int minute=p_tm->tm_min;
     int weekday=p_tm->tm_wday; //day of the week, range 0 to 6
+    int daylight=p_tm->tm_isdst; //check for DST, 1 if in effect, zero is not and negative if no info available
+    if (dst != daylight)
+    {
+      dst = daylight;
+      timeupdate(timezone, dst);
+    }
 
     if (NIGHT_MODE==1)
     {
