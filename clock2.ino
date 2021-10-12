@@ -17,6 +17,7 @@
 #define NIGHT_ON_TIME     7     //Time that clock turns on when night mode is active
 int NIGHT_CHK = 0;              //Night model toggle
 int WEEKEND_CHK = 0;            //Weekend mode toggle
+int DST_MODE = 0;               //Daylight savings time mode toggle
 
 CRGB leds[NUM_LEDS];
 
@@ -32,7 +33,6 @@ const char* password = "PASSWORD";
 
 //Your time zone
 int timezone = -8 * 3600; //UTC offset * 3600
-int DST = 0;  //Default to DST is in effect
 int CHK_DST = 0;                //Flip flop check to see if DST has changed and if so, force time update
    
 WiFiClient wifiClient;
@@ -59,15 +59,15 @@ void setup() {
   connectWifi();
   Serial.println();
   Serial.println("\n\nNext Loop-Step: " + String(millis()) + ":");
-  configTime(timezone, DST*(3600), "pool.ntp.org","time.nist.gov");
+  configTime(timezone, 0, "pool.ntp.org","time.nist.gov");
   FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS)
     .setCorrection(TypicalLEDStrip)
     .setDither(BRIGHTNESS < 255);
   FastLED.setBrightness(BRIGHTNESS);
 }
 
-void timeupdate(int timezone, int DST) {
-  configTime(timezone, DST*(3600), "pool.ntp.org","time.nist.gov");
+void timeupdate(int timezone) {
+  configTime(timezone, 0, "pool.ntp.org","time.nist.gov");
 }
 
 void loop()
@@ -81,30 +81,36 @@ void loop()
     Serial.print(p_tm->tm_mon + 1);
     Serial.print("/");
     Serial.print(p_tm->tm_year + 1900);
-    Serial.print(" DST ");
-    Serial.print(DST);
+    Serial.print(" DST_MODE ");
+    Serial.print(DST_MODE);
     Serial.print(" ");
     Serial.print(CHK_DST);
     Serial.print(" ");
     int month=p_tm->tm_mon;
     int day=p_tm->tm_mday;
     int hour=p_tm->tm_hour;
+    if (DST_MODE == 0) {
+      hour = hour;
+    }
+    else if (DST_MODE == 1) {
+      hour = hour + 1;
+    }
     int minute=p_tm->tm_min;
     int weekday=p_tm->tm_wday; //day of the week, range 0 to 6
 
 if (month > 3 && month < 11)
     {
-     DST = 1;
+     DST_MODE = 1;
     }
 else if (month == 3)
     {
      if (day > 14)
          {
-          DST = 1;
+          DST_MODE = 1;
          } 
      else if (day < 8)
          {
-          DST = 0; 
+          DST_MODE = 0; 
          }
      else if (day == 8)
            {
@@ -112,7 +118,7 @@ else if (month == 3)
               {
                 if (hour > 1)
                  {
-                  DST = 1;
+                  DST_MODE = 1;
                  }
               }
            }   
@@ -122,7 +128,7 @@ else if (month == 3)
               {
                 if (hour > 1)
                  {
-                  DST = 1;
+                  DST_MODE = 1;
                  }
               }
            }   
@@ -132,7 +138,7 @@ else if (month == 3)
               {
                 if (hour > 1)
                  {
-                  DST = 1;
+                  DST_MODE = 1;
                  }
               }
            }   
@@ -142,7 +148,7 @@ else if (month == 3)
               {
                 if (hour > 1)
                  {
-                  DST = 1;
+                  DST_MODE = 1;
                  }
               }
            }   
@@ -152,7 +158,7 @@ else if (month == 3)
               {
                 if (hour > 1)
                  {
-                  DST = 1;
+                  DST_MODE = 1;
                  }
               }
            }   
@@ -162,7 +168,7 @@ else if (month == 3)
               {
                 if (hour > 1)
                  {
-                  DST = 1;
+                  DST_MODE = 1;
                  }
               }
            }  
@@ -172,20 +178,20 @@ else if (month == 3)
               {
                 if (hour > 1)
                  {
-                  DST = 1;
+                  DST_MODE = 1;
                  }                 
               }
            }   
        else
            {
-            DST = 0;
+            DST_MODE = 0;
            }
     } 
 else if (month == 11)
     {
      if (day > 7)
          {
-          DST = 0;
+          DST_MODE = 0;
          } 
      else if (day == 1)
            {
@@ -193,7 +199,7 @@ else if (month == 11)
               {
                 if (hour > 1)
                  {
-                  DST = 0;
+                  DST_MODE = 0;
                  }
               }
            }   
@@ -203,7 +209,7 @@ else if (month == 11)
               {
                 if (hour > 1)
                  {
-                  DST = 0;
+                  DST_MODE = 0;
                  }
               }
            }   
@@ -213,7 +219,7 @@ else if (month == 11)
               {
                 if (hour > 1)
                  {
-                  DST = 0;
+                  DST_MODE = 0;
                  }
               }
            }   
@@ -223,7 +229,7 @@ else if (month == 11)
               {
                 if (hour > 1)
                  {
-                  DST = 0;
+                  DST_MODE = 0;
                  }
               }
            }   
@@ -233,7 +239,7 @@ else if (month == 11)
               {
                 if (hour > 1)
                  {
-                  DST = 0;
+                  DST_MODE = 0;
                  }
               }
            }   
@@ -243,7 +249,7 @@ else if (month == 11)
               {
                 if (hour > 1)
                  {
-                  DST = 0;
+                  DST_MODE = 0;
                  }
               }
            }  
@@ -253,22 +259,16 @@ else if (month == 11)
               {
                 if (hour > 1)
                  {
-                  DST = 0;
+                  DST_MODE = 0;
                  }                 
               }
            }   
        else
            {
-            DST = 1;
+            DST_MODE = 1;
            }
     }
     
-    if (DST != CHK_DST)
-    {
-      CHK_DST = DST;
-      timeupdate(timezone, DST);
-    }
-
     if (NIGHT_MODE==1)
     {
       if (hour==NIGHT_OFF_TIME && NIGHT_CHK==0)
