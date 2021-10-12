@@ -16,6 +16,7 @@ Settings to configure:
 
  #define NIGHT_ON_TIME     7     //Time (hour) that clock turns on when night mode is active
 
+ #define DST               1     //DST adjustment toggle (set 0 if you don't want auto adjust, 1 if you do)
 
 Updated code to show minutes 1 through 9 as two-digits instead of one digit (e.g., 2 is shown as 02)
 
