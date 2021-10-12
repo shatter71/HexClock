@@ -15,9 +15,9 @@
 #define WEEKEND_MODE      0     //Set weekend mode where 0 is off and 1 is on (Weekend mode turns the clock off on the weekends)
 #define NIGHT_OFF_TIME    22    //Time that clock turns off when night mode is active
 #define NIGHT_ON_TIME     7     //Time that clock turns on when night mode is active
+#define DST               1     //DST adjustment toggle (set 0 if you don't want auto adjust, 1 if you do)
 int NIGHT_CHK = 0;              //Night model toggle
 int WEEKEND_CHK = 0;            //Weekend mode toggle
-int DST_MODE = 0;               //Daylight savings time mode toggle
 
 CRGB leds[NUM_LEDS];
 
@@ -34,6 +34,7 @@ const char* password = "PASSWORD";
 //Your time zone
 int timezone = -8 * 3600; //UTC offset * 3600
 int CHK_DST = 0;                //Flip flop check to see if DST has changed and if so, force time update
+int DST_MODE = 0;               //Daylight savings time active or not
    
 WiFiClient wifiClient;
 
@@ -89,185 +90,189 @@ void loop()
     int month=p_tm->tm_mon;
     int day=p_tm->tm_mday;
     int hour=p_tm->tm_hour;
-    if (DST_MODE == 0) {
-      hour = hour;
-    }
-    else if (DST_MODE == 1) {
-      hour = hour + 1;
+    if (DST == 1) { 
+      if (DST_MODE == 0) {
+        hour = hour;
+      }
+      else if (DST_MODE == 1) {
+        hour = hour + 1;
+      }
     }
     int minute=p_tm->tm_min;
     int weekday=p_tm->tm_wday; //day of the week, range 0 to 6
 
-if (month > 3 && month < 11)
-    {
-     DST_MODE = 1;
-    }
-else if (month == 3)
-    {
-     if (day > 14)
-         {
-          DST_MODE = 1;
-         } 
-     else if (day < 8)
-         {
-          DST_MODE = 0; 
-         }
-     else if (day == 8)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 1;
-                 }
-              }
-           }   
-     else if (day == 9)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 1;
-                 }
-              }
-           }   
-      else if (day == 10)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 1;
-                 }
-              }
-           }   
-      else if (day == 11)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 1;
-                 }
-              }
-           }   
-      else if (day == 12)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 1;
-                 }
-              }
-           }   
-      else if (day == 13)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 1;
-                 }
-              }
-           }  
-      else if (day == 14)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 1;
-                 }                 
-              }
-           }   
-       else
-           {
-            DST_MODE = 0;
-           }
-    } 
-else if (month == 11)
-    {
-     if (day > 7)
-         {
-          DST_MODE = 0;
-         } 
-     else if (day == 1)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 0;
-                 }
-              }
-           }   
-     else if (day == 2)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 0;
-                 }
-              }
-           }   
-      else if (day == 3)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 0;
-                 }
-              }
-           }   
-      else if (day == 4)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 0;
-                 }
-              }
-           }   
-      else if (day == 5)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 0;
-                 }
-              }
-           }   
-      else if (day == 6)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 0;
-                 }
-              }
-           }  
-      else if (day == 7)
-           {
-            if (weekday == 1)
-              {
-                if (hour > 1)
-                 {
-                  DST_MODE = 0;
-                 }                 
-              }
-           }   
-       else
+if (DST == 1) {
+  if (month > 3 && month < 11)
+      {
+       DST_MODE = 1;
+      }
+  else if (month == 3)
+      {
+       if (day > 14)
            {
             DST_MODE = 1;
+           } 
+       else if (day < 8)
+           {
+            DST_MODE = 0; 
            }
-    }
+       else if (day == 8)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 1;
+                   }
+                }
+             }   
+       else if (day == 9)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 1;
+                   }
+                }
+             }   
+        else if (day == 10)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 1;
+                   }
+                }
+             }   
+        else if (day == 11)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 1;
+                   }
+                }
+             }   
+        else if (day == 12)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 1;
+                   }
+                }
+             }   
+        else if (day == 13)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 1;
+                   }
+                }
+             }  
+        else if (day == 14)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 1;
+                   }                 
+                }
+             }   
+         else
+             {
+              DST_MODE = 0;
+             }
+      } 
+  else if (month == 11)
+      {
+       if (day > 7)
+           {
+            DST_MODE = 0;
+           } 
+       else if (day == 1)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 0;
+                   }
+                }
+             }   
+       else if (day == 2)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 0;
+                   }
+                }
+             }   
+        else if (day == 3)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 0;
+                   }
+                }
+             }   
+        else if (day == 4)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 0;
+                   }
+                }
+             }   
+        else if (day == 5)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 0;
+                   }
+                }
+             }   
+        else if (day == 6)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 0;
+                   }
+                }
+             }  
+        else if (day == 7)
+             {
+              if (weekday == 1)
+                {
+                  if (hour > 1)
+                   {
+                    DST_MODE = 0;
+                   }                 
+                }
+             }   
+         else
+             {
+              DST_MODE = 1;
+             }
+      }
+}
     
     if (NIGHT_MODE==1)
     {
