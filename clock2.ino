@@ -1,12 +1,13 @@
 #include <ESP8266WiFi.h>
 #include <time.h>
 #include "FastLED.h"
+#define FASTLED_ESP8266_RAW_PIN_ORDER
 
 #if FASTLED_VERSION < 3001000
 #error "Requires FastLED 3.1 or later; check github for latest code."
 #endif
 
-#define DATA_PIN    4
+#define DATA_PIN    2
 #define LED_TYPE    WS2811
 #define COLOR_ORDER RGB
 #define NUM_LEDS    96
