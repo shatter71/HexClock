@@ -30,7 +30,7 @@ int b=255;
 const char* ESP_HOST_NAME = "esp-" + ESP.getFlashChipId();
 //Your Wifi info
 const char* ssid    = "SSID";
-const char* password = "PASSWORD";
+const char* password = "password";
 
 //Your time zone
 int timezone = -8 * 3600; //UTC offset * 3600
@@ -89,7 +89,7 @@ void loop()
     Serial.print(CHK_DST);
     Serial.print(" ");
     int month=p_tm->tm_mon;
-    int day=p_tm->tm_mday;
+    int day=p_tm->tm_mday + 1;
     int hour=p_tm->tm_hour;
     if (DST == 1) { 
       if (DST_MODE == 0) {
@@ -100,7 +100,7 @@ void loop()
       }
     }
     int minute=p_tm->tm_min;
-    int weekday=p_tm->tm_wday; //day of the week, range 0 to 6
+    int weekday=p_tm->tm_wday + 1; //day of the week, range 0 to 6
 
 if (DST == 1) {
   if (month + 1 > 3 && month + 1 < 11)
